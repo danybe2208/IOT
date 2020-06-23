@@ -6,7 +6,7 @@
 #define WIFI_SSID "BJL"
 #define WIFI_PASSWORD "08161203"
 
-#define MQTT_HOST IPAddress(192, 168, 1, 106)
+#define MQTT_HOST IPAddress(192, 168, 15, 55)
 
 #define MQTT_PORT 1883
 
@@ -60,7 +60,7 @@ void onMqttConnect(bool sessionPresent) {
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-  Serial.println("Discontectado do MQTT.");
+  Serial.println("Disconectado do MQTT.");
 
   if (WiFi.isConnected()) {
     mqttReconnectTimer.once(2, connectToMqtt);
@@ -75,7 +75,7 @@ void onMqttPublish(uint16_t packetId) {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println();
+  Serial.println("Teste");
 
   dht.begin();
   
