@@ -13,6 +13,8 @@
 #define MQTT_PUB_TEMP "esp/dht/temperature"
 #define MQTT_PUB_HUM "esp/dht/humidity"
 
+#define pino_rele 7
+
 #define DHTPIN 14  
 
 #define DHTTYPE DHT11
@@ -30,7 +32,9 @@ WiFiEventHandler wifiDisconnectHandler;
 Ticker wifiReconnectTimer;
 
 unsigned long previousMillis = 0;   
-const long interval = 10000;        
+const long interval = 10000;       
+
+
 
 void connectToWifi() {
   Serial.println("Conectando o Wi-Fi...");
@@ -76,6 +80,8 @@ void onMqttPublish(uint16_t packetId) {
 void setup() {
   Serial.begin(115200);
   Serial.println("Teste");
+  
+  pinMode(pino_rele, OUTPUT);
 
   dht.begin();
   
@@ -96,7 +102,6 @@ void loop() {
   
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
-    hum = dht.readHumidity();
     temp = dht.readTemperature();
     uint16_t packetIdPub1 = mqttClient.publish(MQTT_PUB_TEMP, 1, true, String(temp).c_str());                            
     Serial.printf("Publishing on topic %s at QoS 1, packetId: %i ", MQTT_PUB_TEMP, packetIdPub1);
@@ -105,5 +110,13 @@ void loop() {
     uint16_t packetIdPub2 = mqttClient.publish(MQTT_PUB_HUM, 1, true, String(hum).c_str());                            
     Serial.printf("Publishing on topic %s at QoS 1, packetId %i: ", MQTT_PUB_HUM, packetIdPub2);
     Serial.printf("Message: %.2f \n", hum);
+  }
+  
+  if(temp >= 35){
+    digitalWrite(pino_rele, HIGH);
+  }
+  
+  if(temp < 35){
+    digitalWrite(pino_rele, LOW);
   }
 }
